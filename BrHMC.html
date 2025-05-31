@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRHMC System Requirements Specification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Similar to Tailwind's default font stack */
+        }
+        .content-section {
+            display: none; /* Hide all sections by default */
+        }
+        .content-section.active {
+            display: block; /* Show active section only */
+        }
+        .nav-link.active {
+            background-color: #0369a1; /* sky-700 */
+            color: white;
+        }
+        .sub-nav-link.active {
+            background-color: #075985; /* sky-800 */
+            font-weight: bold;
+        }
+        /* Scrollbar styles (optional) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        /* Chart container specific styles */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px; /* Example max width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Default height */
+            max-height: 400px; /* Max height */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+    </head>
+<body class="bg-stone-100 text-stone-800">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside class="w-full md:w-72 bg-slate-800 text-slate-100 p-4 space-y-2 md:h-screen md:sticky md:top-0 overflow-y-auto">
+            <h1 class="text-2xl font-bold text-sky-400 mb-6">BRHMC Requirements</h1>
+            <nav id="mainNav">
+                <a href="#" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white" data-section="overview">Overview</a>
+                <a href="#" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white" data-section="techArchitecture">Technology Architecture & Design Principles</a>
+                <div>
+                    <a href="#" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white" data-section="healthcareSystems">Healthcare Systems</a>
+                    <div id="healthcareSubNav" class="ml-4 mt-1 space-y-1 hidden">
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="his">Hospital Information System (HIS)</a>
+                        <div id="hisModuleNav" class="ml-4 mt-1 space-y-1 hidden">
+                            </div>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="cis">Clinical Information Systems (CIS)</a>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="cms">Clinical Management Systems (CMS)</a>
+                    </div>
+                </div>
+                <div>
+                    <a href="#" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white" data-section="financeSystems">Finance Systems</a>
+                     <div id="financeSubNav" class="ml-4 mt-1 space-y-1 hidden">
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="financeAdmin">Administration</a>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="financeFinancials">Financials</a>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="financePurchasing">Purchasing - AP</a>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="financeAR">Accounts Receivable (AR)</a>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="financeBanking">Banking</a>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="financeInventory">Inventory</a>
+                        <a href="#" class="sub-nav-link block py-2 px-3 rounded text-sm hover:bg-slate-600" data-subsection="financeFixedAssets">Fixed Asset Accounting</a>
+                    </div>
+                </div>
+                <a href="#" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white" data-section="generalTech">General Technologies</a>
+                <a href="#" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white" data-section="hospitalInternet">Hospital Internet</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <div id="contentHost">
+                </div>
+        </main>
+    </div>
+
+    <script>
+        const contentData = {
+            overview: {
+                title: "Overview and Introduction",
+                render: () => `
+                    <h2 class="text-3xl font-semibold text-sky-700 mb-6">Overview and Introduction</h2>
+                    <p class="mb-4 text-lg">This document details the next-generation Hospital Information System, Clinical Information System, Finance System, and related technology requirements for BRHMC (Bicol Regional Hospital and Medical Center). This system aims to maximize hospital operational efficiency, provide quality medical services to patients, and support data-driven decision-making.</p>
+                    <p class="mb-4">Each section details the key functions, technology architecture principles, performance indicators, and security requirements that the system must possess. Through the selection of a successful bidder, BRHMC anticipates its transformation into a future-oriented smart hospital.</p>
+                `
+            },
+            techArchitecture: {
+                title: "Technology Architecture and Design Principles",
+                render: () => `
+                    <h2 class="text-3xl font-semibold text-sky-700 mb-6">Technology Architecture and Design Principles</h2>
+                    <p class="mb-6 text-gray-700">This system must be developed in compliance with the following core technology architecture and design principles. This is to ensure the system's stability, scalability, maintainability, security, and user-friendliness.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">High Availability and Failover Support</h3>
+                            <p>The solution must be able to support high availability and failover on the hardware and software level.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Flexible Persistent Storage</h3>
+                            <p>The solution must be able to support a flexible persistence storage to accommodate dynamic fields / forms without having to recreate the database every time a change in the form is required.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Modular</h3>
+                            <p>The solution must be able to support high availability and failover on the hardware and software level. (Appears redundant in the source document, but maintained as a separate item to emphasize the importance of modularity).</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Responsive Design</h3>
+                            <p>The solution must be able to utilize a responsive web design approach to make it user friendly by re-sizing the sites for different device screens, allowing content (text, image, menu bar etc.) to get re-sized depending on size of the screens and provide an optimal viewing experience across a wide range of devices, from mobile phones to desktop computer monitors.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Healthcare Messaging Standards</h3>
+                            <p>The solution must conform to the requirements of standard healthcare communications and message protocols that support integration of different systems and devices that includes LIS, RIS, etc. for transmission and use of data.</p>
+                            <ul class="list-disc list-inside mt-2 pl-4">
+                                <li><strong>Must support Communication Standard protocols:</strong> HTTP, Database, email PDF, JMS, TCP/IP, Web services, File System</li>
+                                <li><strong>Message Protocols:</strong> HL7 v2 and v3, CDA, XML</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Central Repository</h3>
+                            <p>The solution must contain a central repository to aggregate and store all data from various components inside the hospital which can later be packaged for various uses including but not limited to analytics and reporting.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Single Page Application (SPA)</h3>
+                            <p>The solution must be able to employ a single-page application that provides a more fluid user experience similar to a desktop application that enables users to view amount of content in one page and eliminates the need for clicking page refresh.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Scalable Architecture</h3>
+                            <p>The solution must be able to support horizontal scaling or the ability to scale out when processing requirements increase. Built on an enterprise programming language like Java.</p>
+                        </div>
+                         <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">User Experience</h3>
+                            <p>The solution must be able to show a clinical workflow and integration that minimizes disruption to workflow and productivity and accelerate user adoption.</p>
+                             <ul class="list-disc list-inside mt-2 pl-4">
+                                <li>Must support single sign-on (and single sign-off) authentication.</li>
+                                <li>Must incorporate responsive design to provide optimal viewing experience regardless of screen sizes of devices including but not limited to desktop and mobile browsing.</li>
+                                <li>Must incorporate intuitive design rules.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Security</h3>
+                             <ul class="list-disc list-inside mt-2 pl-4">
+                                <li>The solution must be able to include the ability to track updates, users and changes in all system transactions in chronological order (audit logs).</li>
+                                <li>Must incorporate system-wide, standard role-based access management.</li>
+                                <li>Must use cryptographic protocols including but not limited Transport Layer Security (TLS) and Secure Sockets Layer (SSL).</li>
+                                <li>Must encrypt sensitive data at all times.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Archiving</h3>
+                            <p>The solution must be able to supports configurable archiving of data.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Performance Metrics</h3>
+                            <p>The solution must be able to capture and present statistical indicators to reflect hospital performance including but not limited to efficiency, safety and quality outcomes.</p>
+                        </div>
+                    </div>
+                `
+            },
+            healthcareSystems: {
+                title: "Healthcare Systems",
+                render: (subsection, detailId) => {
+                    let content = `<h2 class="text-3xl font-semibold text-sky-700 mb-6">Healthcare Systems</h2>
+                                   <p class="mb-6 text-gray-700">Healthcare Systems are a collection of systems that support the core operational and clinical activities of the hospital. They consist of the Hospital Information System (HIS), Clinical Information Systems (CIS), and Clinical Management Systems (CMS), aiming to provide efficient, patient-centered medical services.</p>`;
+                    
+                    if (!subsection) {
+                         content += `
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button class="subsystem-btn bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="healthcareSystems" data-subsection="his">Go to Hospital Information System (HIS)</button>
+                                <button class="subsystem-btn bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="healthcareSystems" data-subsection="cis">Go to Clinical Information Systems (CIS)</button>
+                                <button class="subsystem-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="healthcareSystems" data-subsection="cms">Go to Clinical Management Systems (CMS)</button>
+                            </div>
+                            <p>Click the buttons above to view the detailed requirements for each subsystem.</p>
+                        `;
+                    } else if (subsection === 'his') {
+                        content += contentData.healthcareSystems.modules.his.render(detailId);
+                    } else if (subsection === 'cis') {
+                        content += contentData.healthcareSystems.modules.cis.render();
+                    } else if (subsection === 'cms') {
+                        content += contentData.healthcareSystems.modules.cms.render();
+                    }
+                    return content;
+                },
+                modules: {
+                    his: {
+                        title: "Hospital Information System (HIS)",
+                        render: (detailId) => {
+                            let hisContent = `<h3 class="text-2xl font-semibold text-sky-600 mb-4">Hospital Information System (HIS)</h3>
+                                              <p class="mb-6 text-gray-700">The Hospital Information System (HIS) is the core system for efficiently handling the overall operations of the hospital, including patient management, clinical support, administrative affairs, and hospital resource management. Below are the requirements for each major module of the HIS.</p>`;
+                            
+                            const modules = [
+                                {id: 'patientRegistrationRecovery', name: 'Patient Registration & Recovery'},
+                                {id: 'admissionModule', name: 'Admission Module'},
+                                {id: 'ordersChargingModule', name: 'Orders & Charging Module'},
+                                {id: 'dischargeBillingModule', name: 'Discharge & Billing Module'},
+                                {id: 'posSystem', name: 'POS System'},
+                                {id: 'pharmacyManagement', name: 'Pharmacy Management System'},
+                                {id: 'suppliesInventory', name: 'Supplies & Inventory'},
+                                {id: 'dietaryNutrition', name: 'Dietary & Nutrition'},
+                                {id: 'ancillaryDepartment', name: 'Ancillary Department Module'},
+                                {id: 'nursingSpecialUnits', name: 'Nursing & Special Units Module'},
+                                {id: 'ambulatoryCareModule', name: 'Ambulatory Care Module'},
+                                {id: 'bedOccupancyManagement', name: 'Bed & Occupancy Management'},
+                                {id: 'housekeeping', name: 'Housekeeping Module'},
+                                {id: 'emergencyDepartmentModule', name: 'Emergency Department Module'},
+                                {id: 'patientHealthRecordDoc', name: 'Patient Health Record & Documentation (EMR Details)'}
+                            ];
+
+                            if (!detailId) {
+                                hisContent += `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+                                modules.forEach(module => {
+                                    hisContent += `<button class="his-module-btn bg-white hover:bg-gray-100 text-sky-700 font-semibold py-3 px-4 border border-sky-500 rounded-lg shadow" data-section="healthcareSystems" data-subsection="his" data-detail="${module.id}">${module.name}</button>`;
+                                });
+                                hisContent += `</div>`;
+                            } else {
+                                const selectedModule = contentData.healthcareSystems.modules.his.details[detailId];
+                                if (selectedModule) {
+                                    hisContent += `
+                                        <div class="p-4 bg-white rounded-lg shadow mb-6">
+                                            <h4 class="text-xl font-semibold text-sky-600 mb-3">${selectedModule.title}</h4>
+                                            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                                ${selectedModule.requirements.map(req => `<li>${req}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                        <button class="back-to-his-modules-btn mt-4 bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg shadow" data-section="healthcareSystems" data-subsection="his">Back to HIS Modules List</button>
+                                    `;
+                                } else {
+                                    hisContent += `<p>Details for the selected module could not be found.</p>`;
+                                }
+                            }
+                            return hisContent;
+                        },
+                        details: {
+                            patientRegistrationRecovery: {
+                                title: "Patient Registration Recovery",
+                                requirements: [
+                                    "Application wide patient registration for inpatients and outpatients with support and provision to a Master Patient Index (MPI) module.",
+                                    "Must be able to manage patient registration and demographics.",
+                                    "Must include patient addresses, next of kin, insurance details (with support for multiple HMOs), aliases and other information.",
+                                    "Must provide support for integration with online Philhealth/HMO membership verification."
+                                ]
+                            },
+                            admissionModule: {
+                                title: "Admission Module",
+                                requirements: [
+                                    "Facility-wide and centralized system to manage hospital admissions.",
+                                    "Must be able to Access to patient’s previous hospital confinements.",
+                                    "Must be able to generate patient labels and admission forms.",
+                                    "Must be fully integrated with Bed and Occupancy Management and Housekeeping for support on bed and room reservations for patients with upcoming hospital stay.",
+                                    "Must be fully integrated with Emergency Department, Ambulatory Care and other Special Units for seamless transition from outpatient to inpatient status (turn ins).",
+                                    "Must have newborn admission with rooming in and left for care options.",
+                                    "Must have full room transfer and discharge facilities.",
+                                    "The solution must be able to do remote application backup and disaster recovery."
+                                ]
+                            },
+                            ordersChargingModule: {
+                                title: "Orders and Charging Module",
+                                requirements: [
+                                    "Must have a system to enter, manage and modify hospital orders and charges.",
+                                    "Must be able to support both professional fees and hospital/technical charges.",
+                                    "Must be able to support code sets ICD 10 and CPT for diagnosis and procedures.",
+                                    "Must be able to support for late orders (Credit Memo) and late charges.",
+                                    "Must have automatic room and bed posting.",
+                                    "Must have automatic pipe-in medical gas charging.",
+                                    "Must have automatic batch drug charging.",
+                                    "Must allow posting of adjustments in charges."
+                                ]
+                            },
+                             dischargeBillingModule: {
+                                title: "Discharge and Billing Module",
+                                requirements: [
+                                    "Must be able to manage discharge status and hospital billings. Includes Statement of Accounts, discharge workflows, PhilHealth and HMO connectivity and ICD-10 coding.",
+                                    "Must have Credit Limit encoding.",
+                                    "Must have HMO benefits encoding, exclusions tagging and procedure adjustments.",
+                                    "Must have Hospital bills and Professional fee settlement.",
+                                    "Must have Full patient Philhealth claims calculations.",
+                                    "Must be able to support automatic and manual discounts.",
+                                    "Must be able to accept deposits and partial payments.",
+                                    "Must allow posting of adjustments.",
+                                    "Must be able to generate Statement of Account and Discharge Clearance.",
+                                    "Must be able to support discharge with balance processing.",
+                                    "Must have refund processing.",
+                                    "Must have Philhealth Claim/HMO Transmittal.",
+                                    "Must have AR Interface and Miscellaneous payments.",
+                                    "Must be able to accept multiple payment modes e.g. Cash, Credit card, Cheques, Debit."
+                                ]
+                            },
+                            posSystem: {
+                                title: "Point-of-Sale System",
+                                requirements: [
+                                    "The solution must have built in Point-of-Sale System to manage over-the-counter transactions for supplies and prescriptions."
+                                ]
+                            },
+                            pharmacyManagement: {
+                                title: "Pharmacy Management System",
+                                requirements: [
+                                   "The solution must be able to manage and dispense medication orders for inpatient, emergency, and outpatient settings. The solution must be integrated with billing and inventory.",
+                                   "The solution must support a closed-loop medication solution and process.",
+                                   "The solution must have order routing to Pharmacy for review and verification.",
+                                   "The solution must support integration with an electronic Medication Administration Record.",
+                                   "The solution must provide clinical decision support via integration with commercially available drug databases, e.g., MIMS, Lexicomp, etc.",
+                                   "The solution must have facility for alerts, notifications, and messaging.",
+                                   "The solution must have a built-in Point-of-Sales system to manage over-the-counter transactions for supplies and prescriptions.",
+                                   "The solution must have facility for barcode scanning."
+                                ]
+                            },
+                            suppliesInventory: {
+                                title: "Supplies and Inventory",
+                                requirements: [
+                                    "The solution must support integration with a full and comprehensive, third-party (including open-source) inventory system for facility-wide management of supplies and other inventory items."
+                                ]
+                            },
+                            dietaryNutrition: {
+                                title: "Dietary and Nutrition",
+                                requirements: [
+                                    "The solution must be able to manage dietary orders and nutritional requirements via this module."
+                                ]
+                            },
+                            ancillaryDepartment: {
+                                title: "Ancillary Department Module",
+                                requirements: [
+                                    "The solution must have a user-group-specific module to manage order worklists, charges, and credit memos for performing units of ancillary departments."
+                                ]
+                            },
+                            nursingSpecialUnits: {
+                                title: "Nursing and Special Units Module",
+                                requirements: [
+                                    "The solution must have a user-group-specific module to enter, manage, and modify orders, charges, and patient status for wards and other special nursing units."
+                                ]
+                            },
+                            ambulatoryCareModule: {
+                                title: "Ambulatory Care Module",
+                                requirements: [
+                                    "The solution must have a user-group-specific module to manage outpatient registrations, charges, and billing for ambulatory care units and outpatient services."
+                                ]
+                            },
+                            bedOccupancyManagement: {
+                                title: "Bed and Occupancy Management",
+                                requirements: [
+                                    "The solution must have a module to manage bed status, occupancies, and planning. The solution must include file maintenance of beds and capacity planning."
+                                ]
+                            },
+                            housekeeping: {
+                                title: "Housekeeping Module",
+                                requirements: [
+                                    "The solution must have a module to manage the status of rooms for preparation, cleaning, and special instructions."
+                                ]
+                            },
+                            emergencyDepartmentModule: {
+                                title: "Emergency Department Module",
+                                requirements: [
+                                   "The solution must have a module used to manage data in support of Emergency Department patient care and operations with features that include:",
+                                   "Patient registration and patient label printing",
+                                   "Triage information data entry",
+                                   "Ordering",
+                                   "Clinical documentation",
+                                   "Admin/transfer/discharge planning"
+                                ]
+                            },
+                            patientHealthRecordDoc: {
+                                title: "Patient Health Record and Documentation",
+                                requirements: [
+                                   "<strong>In-Patient Medical Record:</strong> The solution must be able to document patient medical information, including custom templates to capture pertinent information like allergies, past medical history, medications, diagnoses, and immunizations.",
+                                   "<strong>Nurse Documentation:</strong> The solution must be able to manage nursing charts to manage vital signs, flow sheets, assessment tools (i.e., fall, pain, nutrition screening, etc.), nursing notes, and patient monitoring.",
+                                   "<strong>Physician Documentation:</strong> The solution must be a module for doctors to enter and manage clinical documentation, including discharge summaries, clinical abstracts, problem lists, operative techniques, and progress notes. The solution must include features to manage document templates and note templates.",
+                                   "<strong>Results Management and Communication:</strong> The solution must have a module for ancillary performing units to input, modify, and validate clinical tests and reports. Finalized results must be stored and viewed via the clinical data repository.",
+                                   "<strong>Clinical Worklists:</strong> The solution must have a module for clinical teams to manage patient care instructions and tasks.",
+                                   "<strong>Clinical Research Databases:</strong> The solution must be able to create and manage clinical research databases, including cancer and tumor registries.",
+                                   "<strong>Mobile Clinical Modules:</strong> The solution must have clinical modules custom-designed for use with portable devices, including Tablets, computers on wheels, and iPads. The solution must be able to be used for bedside charting."
+                                ]
+                            }
+                        }
+                    },
+                    cis: {
+                        title: "Clinical Information Systems (CIS)",
+                        render: () => `
+                            <h3 class="text-2xl font-semibold text-teal-600 mb-4">Clinical Information Systems (CIS)</h3>
+                            <p class="mb-6 text-gray-700">Clinical Information Systems (CIS) effectively manage patient-centric clinical data, support medical staff decision-making, and facilitate seamless information exchange between various systems.</p>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-white rounded-lg shadow">
+                                    <h4 class="text-lg font-semibold text-teal-700">Clinical Data Repository</h4>
+                                    <p>The solution must be a central repository to aggregate all patient-centric clinical health data from multiple-source IT systems and repackage those data in different ways for various purposes, most especially care coordination, representing all available points of care.</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow">
+                                    <h4 class="text-lg font-semibold text-teal-700">Medical Vocabulary Management</h4>
+                                    <p>The solution must be able to standardize data and map terminologies so that medical concepts are represented uniformly for medical decision-making.</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow">
+                                    <h4 class="text-lg font-semibold text-teal-700">Forms Creator Engine</h4>
+                                    <p>The solution must be able to allow trained users to create customized forms that don't require extensive user training and supports the creation of forms with pre-loaded text. The solution must integrate with a medical standards vocabulary that will harmonize data entries.</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow">
+                                    <h4 class="text-lg font-semibold text-teal-700">Integration Engine</h4>
+                                    <p>The solution must be able to provide the ability to support information exchange via an interface engine that allows for bi-directional sending of standard healthcare data (HL7 protocol) between different healthcare systems, such as laboratory (LIS), radiology imaging (RIS), and other applications.</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow">
+                                    <h4 class="text-lg font-semibold text-teal-700">Data Warehouse / Central Repository</h4>
+                                    <p>The solution must be able to contain a central repository to aggregate and store all data from various components inside the hospital, including the clinical data repository. Data must be extracted from different sources and formats, transformed, and loaded into a star schema design (ETL), which is optimized for reporting and analytics.</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow">
+                                    <h4 class="text-lg font-semibold text-teal-700">Reports</h4>
+                                    <p>The solution must be able to generate reports containing data retrieved from different modules in the system, including but not limited to real-time data or historical data.</p>
+                                </div>
+                                 <div class="p-4 bg-white rounded-lg shadow">
+                                    <h4 class="text-lg font-semibold text-teal-700">Admin</h4>
+                                    <p>The solution must be able to manage user accounts, passwords, search functionalities, audit logs, and printer configurations.</p>
+                                </div>
+                            </div>
+                            <button class="back-to-main-healthcare-btn mt-6 bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg shadow" data-section="healthcareSystems">Back to Healthcare Systems Overview</button>
+                        `
+                    },
+                    cms: {
+                        title: "Clinical Management Systems (CMS)",
+                        render: () => `
+                            <h3 class="text-2xl font-semibold text-indigo-600 mb-4">Clinical Management Systems (CMS) - Outpatient and Ambulatory EMR/CMS</h3>
+                            <p class="mb-6 text-gray-700">Electronic Medical Record (EMR) and Clinic Management System (CMS) specialized for outpatient and clinic environments aim to enhance the efficiency of physicians' clinical work and improve the quality of patient management. Winning bidder shall supply, install and configure the following systems for BRHMC:</p>
+                             <div class="p-4 bg-white rounded-lg shadow">
+                                <h4 class="text-lg font-semibold text-indigo-700 mb-2">Outpatient and Ambulatory Electronic Medical Record (EMR) and Clinic Management System (CMS)</h4>
+                                <p class="mb-2">The solution must facilitate complete storage of patient's medical records that manages both healthcare data elements and practice requirements. This covers the full revenue cycle of a doctor’s clinic practice from appointments to billing. It provides comprehensive management of the patient records system and automates the administrative and business aspects required to efficiently run a clinic. The solution must have the following features:</p>
+                                <ul class="list-disc list-inside space-y-1 text-gray-700 pl-4">
+                                    <li>Appointments and Scheduling</li>
+                                    <li>Patient Registration</li>
+                                    <li>Queue Management</li>
+                                    <li>Patient Health Record</li>
+                                    <li>Forms Template Library for different practice specialties</li>
+                                    <li>Image Capture, Upload, and Annotation</li>
+                                    <li>Scanned Note and Results Attachment Uploads</li>
+                                    <li>Health Tracker for monitoring trends of various results (BP, Uric Acid, etc.)</li>
+                                    <li>Electronic Medication Prescription and Printing</li>
+                                    <li>Manage Referral Notes</li>
+                                    <li>Integrated Billing and Statement of Accounts (SOA)</li>
+                                    <li>Payments Monitoring (Patient & HMO)</li>
+                                    <li>Reports Generation: Census, Accounts Receivables (AR), Cashier</li>
+                                    <li>Inventory of Clinic Items and Procedures</li>
+                                    <li>Support for Multi and/or Group Practice as well as Multi-Clinic Location</li>
+                                    <li>User and Clinic Management and Permissions</li>
+                                    <li>Support for lab results integration</li>
+                                </ul>
+                            </div>
+                            <button class="back-to-main-healthcare-btn mt-6 bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg shadow" data-section="healthcareSystems">Back to Healthcare Systems Overview</button>
+                        `
+                    }
+                }
+            },
+            financeSystems: {
+                title: "Finance Systems (ERP)",
+                render: (subsection) => {
+                    let content = `<h2 class="text-3xl font-semibold text-sky-700 mb-6">Finance Systems (ERP)</h2>
+                                   <p class="mb-6 text-gray-700">The Finance System (ERP) integrally supports the hospital's finance, accounting, purchasing, inventory, and other related administrative tasks. Winning bidder shall supply, install and configure the following ERP systems for BRHMC.</p>`;
+                    if (!subsection) {
+                         content += `
+                            <p class="mb-4">Select below to view detailed requirements for each module. Each module contributes to enhancing the transparency and efficiency of hospital finances.</p>
+                            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <button class="subsystem-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="financeSystems" data-subsection="financeAdmin">Administration</button>
+                                <button class="subsystem-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="financeSystems" data-subsection="financeFinancials">Financials</button>
+                                <button class="subsystem-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="financeSystems" data-subsection="financePurchasing">Purchasing - AP</button>
+                                <button class="subsystem-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="financeSystems" data-subsection="financeAR">Accounts Receivable (AR)</button>
+                                <button class="subsystem-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="financeSystems" data-subsection="financeBanking">Banking</button>
+                                <button class="subsystem-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="financeSystems" data-subsection="financeInventory">Inventory</button>
+                                <button class="subsystem-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow" data-section="financeSystems" data-subsection="financeFixedAssets">Fixed Asset Accounting</button>
+                            </div>`;
+                    } else {
+                        const selectedModule = contentData.financeSystems.modules[subsection];
+                        if (selectedModule) {
+                            content += `
+                                <div class="p-4 bg-white rounded-lg shadow mb-6">
+                                    <h3 class="text-2xl font-semibold text-emerald-600 mb-4">${selectedModule.title}</h3>
+                                    ${selectedModule.sections.map(section => `
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-semibold text-emerald-700">${section.subtitle}</h4>
+                                            <ul class="list-disc list-inside space-y-1 text-gray-700 pl-4">
+                                                ${section.requirements.map(req => `<li>${req}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="back-to-main-finance-btn mt-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow" data-section="financeSystems">Back to Finance Systems Overview</button>
+                            `;
+                        } else {
+                            content += `<p>Details for the selected module could not be found.</p>`;
+                        }
+                    }
+                    return content;
+                },
+                modules: {
+                    financeAdmin: {
+                        title: "Administration",
+                        sections: [
+                            { subtitle: "Basic Setup", requirements: ["Exchange Rate", "System Initialization", "Company Details", "General Settings", "Posting Periods", "Authorizations", "Document Numbering", "Document Settings", "Opening Balances", "GL Accounts", "Business Partners"] },
+                            { subtitle: "Setup", requirements: ["General", "Users", "Security"] },
+                            { subtitle: "Financials (Setup)", requirements: ["Edit Chart of Accounts", "GL Account Determination", "Account Segmentation", "Currencies", "Cash Flow Line Items", "Tax codes for VAT and EWT"] },
+                            { subtitle: "Business Partners (Setup)", requirements: ["Customer Groups", "Vendor Groups", "Payment Terms"] },
+                            { subtitle: "Banking (Setup)", requirements: ["Banks", "Bank Accounts", "Payment Methods"] },
+                            { subtitle: "Inventory (Setup)", requirements: ["Item Groups", "Warehouses", "Locations", "Inventory Cycle Count"] },
+                            { subtitle: "Data Import", requirements: ["Data Import from Excel"] },
+                            { subtitle: "Utilities", requirements: ["Period End Closing", "Data Archive", "Approval Procedures", "Approval Stages", "Approval Templates", "Approval Status Report", "Approval Decision Report", "Preconfigured Alerts Management"] }
+                        ]
+                    },
+                    financeFinancials: {
+                        title: "Financials",
+                        sections: [
+                            { subtitle: "Core Functions", requirements: ["Chart of Accounts", "Account Code Generator", "Journal Entry", "Journal Vouchers", "Posting Templates", "Recurring Postings", "Reverse Transactions", "Exchange Rate Difference", "Conversion Difference", "Internal Reconciliation"] },
+                            { subtitle: "Budget", requirements: ["Budget Setup"] },
+                            { subtitle: "Cost Accounting", requirements: ["Cost Centers", "Distribution Rules", "Cost Center Hierarchy", "Cost Center Report", "Distribution Report", "Cost Accounting Summary", "Budget vs Cost Accounting", "Accrual Type", "Cost Accounting Reconciliation Report"] },
+                            { subtitle: "Reports - Accounting", requirements: ["GL Accounts and Business Partners", "General Ledger", "Aging of Payables", "Aging of Receivables", "Transaction Journal Reports", "Document Journal"] },
+                            { subtitle: "Reports - Tax Reports", requirements: ["Form 2307 – Certificate of Withholding Tax", "Form 1601E – Monthly Remittance Return for EWT", "MAP – Monthly Alphalist of Payees (Dat File and Crystal Reports)", "1604E - Yearly Return for EWT (Date file and Crystal Report)", "2550M – Vat Return (Monthly)", "2550Q – Vat Return (Quarterly)", "EWT Report – Schedule of Withholding Tax (Supplier only)", "EWT Quarterly – Quarterly EWT Schedule (Supplier only)", "Input VAT Report", "Customer Open Documents List"] },
+                            { subtitle: "Reports - Financial Reports", requirements: ["Balance Sheet", "Trial Balance", "Profit and Loss Statement", "Cash Flow"] },
+                            { subtitle: "Reports - Comparison", requirements: ["Balance Sheet Comparison", "Trial Balance Comparison", "Profit and Loss Statement Comparison"] },
+                            { subtitle: "Reports - Budget Reports", requirements: ["Budget Reports", "Balance Sheet Budget", "Trial Balance Budget", "Profit and Loss Statement Budget"] }
+                        ]
+                    },
+                     financePurchasing: {
+                        title: "Purchasing - AP",
+                        sections: [
+                            { subtitle: "Transactions", requirements: ["Purchase Quotation", "Purchase Order", "Goods Receipt PO", "Goods Return", "AP Down payment Invoice", "AP Invoice", "AP Credit Invoice"] },
+                            { subtitle: "Recurring Transactions", requirements: ["Recurring Transactions Template"] },
+                            { subtitle: "Document Printing", requirements: ["PO, RR, APV, CM"] },
+                            { subtitle: "Reports", requirements: ["Open Item List", "Purchase Analysis", "Business Partner Purchase Analysis"] }
+                        ]
+                    },
+                    financeAR: {
+                        title: "Accounts Receivable (AR)",
+                        sections: [
+                            { subtitle: "Transactions", requirements: ["Sales Quotation", "Sales Order", "Delivery", "AR Invoice", "AR Credit Memo"] },
+                            { subtitle: "Recurring Transactions", requirements: ["Recurring Transactions Template"] },
+                            { subtitle: "Document Printing", requirements: ["SO, DR, Invoice, CM"] },
+                            { subtitle: "Reports", requirements: ["Open Items List", "Business partner analysis"] }
+                        ]
+                    },
+                    financeBanking: {
+                        title: "Banking",
+                        sections: [
+                            { subtitle: "Transactions", requirements: ["Incoming Payments", "Deposits", "Outgoing Payments", "Payment Wizard", "Bank Reconciliation"] },
+                            { subtitle: "Document Printing", requirements: ["Check Voucher, Deposits"] },
+                            { subtitle: "Reports", requirements: ["Check Register", "Bank Reconciliation Report"] }
+                        ]
+                    },
+                    financeInventory: {
+                        title: "Inventory",
+                        sections: [
+                            { subtitle: "Master Data", requirements: ["Item Master with Serial and Batch Tracking"] },
+                            { subtitle: "Inventory Transactions", requirements: ["Goods Receipts", "Goods Issue", "Pick and Pack", "Inventory Transfer Request", "Inventory Transfer"] },
+                            { subtitle: "Recurring Transactions", requirements: ["Recurring Transactions Template"] },
+                            { subtitle: "Other Functions", requirements: ["Inventory Cycle Count", "Inventory Opening Balances, Tracking and Posting"] },
+                            { subtitle: "Inventory Reports", requirements: ["Items List", "Open Items List", "Inventory Posting Report", "Inventory Status", "Inventory in Warehouse", "Inventory Audit Report"] }
+                        ]
+                    },
+                    financeFixedAssets: {
+                        title: "Fixed Asset Accounting",
+                        sections: [
+                            { subtitle: "Core Functions", requirements: ["Asset Profile Setup", "Asset Accountability", "Straight Line Monthly Depreciation", "Asset Sales and Disposal", "Asset Repair", "Lapsing Schedule"] }
+                        ]
+                    }
+                }
+            },
+            generalTech: {
+                title: "General Technologies",
+                render: () => `
+                    <h2 class="text-3xl font-semibold text-sky-700 mb-6">General Technologies</h2>
+                    <p class="mb-6 text-gray-700">The system should support or be able to utilize the following general technologies and tools. This contributes to enhancing the system's scalability, flexibility, and reporting/analytical capabilities.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Crystal Report Writer</h3>
+                            <p>Supports Crystal Report Writer tool for report creation and customization.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Drag and Relate – Ad hoc Query</h3>
+                            <p>Provides Drag and Relate functionality, allowing users to directly explore data and easily connect related information to generate ad hoc queries.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">User defined tables and fields</h3>
+                            <p>Supports the ability for system administrators or authorized users to create and manage user-defined tables and fields to meet specific requirements.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Query Manager</h3>
+                            <p>Provides a Query Manager tool for creating, storing, managing, and executing database queries.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow">
+                            <h3 class="text-xl font-semibold text-sky-600 mb-2">Mobility using iPhone and iPad</h3>
+                            <p>Supports mobility, allowing access and use of certain system functionalities using mobile devices such as iPhones and iPads.</p>
+                        </div>
+                    </div>
+                `
+            },
+            hospitalInternet: {
+                title: "Hospital Internet",
+                render: () => `
+                    <h2 class="text-3xl font-semibold text-sky-700 mb-6">Hospital Internet Requirements</h2>
+                     <div class="p-4 bg-white rounded-lg shadow">
+                        <p class="text-lg">Winning bidder shall provide internet subscription for BRHMC with <strong>1 Gbps speed</strong> for 1 year (12 months).</p>
+                        <p class="mt-2 text-gray-600">This is an essential condition to ensure the smooth operation of the Hospital Information System, Clinical Information Systems, and other internet-based services. A stable and fast internet environment is crucial for patient data access, inter-system communication, remote support, and access to the latest medical information.</p>
+                    </div>
+                `
+            }
+        };
+
+        const contentHost = document.getElementById('contentHost');
+        const mainNav = document.getElementById('mainNav');
+        const healthcareSubNav = document.getElementById('healthcareSubNav');
+        const financeSubNav = document.getElementById('financeSubNav');
+        const hisModuleNav = document.getElementById('hisModuleNav');
+
+        function updateNavActiveState(section, subsection = null, detail = null) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.toggle('active', link.dataset.section === section);
+            });
+            document.querySelectorAll('.sub-nav-link').forEach(link => {
+                 if (link.closest('#healthcareSubNav')) {
+                    link.classList.toggle('active', link.dataset.subsection === subsection && section === 'healthcareSystems');
+                 } else if (link.closest('#financeSubNav')) {
+                     link.classList.toggle('active', link.dataset.subsection === subsection && section === 'financeSystems');
+                 }
+            });
+             document.querySelectorAll('.his-module-nav-link').forEach(link => {
+                link.classList.toggle('active', link.dataset.detail === detail && subsection === 'his');
+            });
+
+            healthcareSubNav.style.display = section === 'healthcareSystems' ? 'block' : 'none';
+            financeSubNav.style.display = section === 'financeSystems' ? 'block' : 'none';
+            hisModuleNav.style.display = (section === 'healthcareSystems' && subsection === 'his') ? 'block' : 'none';
+
+        }
+        
+        function populateHisModulesNav() {
+            const modules = [
+                {id: 'patientRegistrationRecovery', name: 'Patient Reg/Recovery'},
+                {id: 'admissionModule', name: 'Admission'},
+                {id: 'ordersChargingModule', name: 'Orders/Charging'},
+                {id: 'dischargeBillingModule', name: 'Discharge/Billing'},
+                {id: 'posSystem', name: 'POS System'},
+                {id: 'pharmacyManagement', name: 'Pharmacy Mgt.'},
+                {id: 'suppliesInventory', name: 'Supplies/Inventory'},
+                {id: 'dietaryNutrition', name: 'Dietary/Nutrition'},
+                {id: 'ancillaryDepartment', name: 'Ancillary Dept.'},
+                {id: 'nursingSpecialUnits', name: 'Nursing/Special Units'},
+                {id: 'ambulatoryCareModule', name: 'Ambulatory Care'},
+                {id: 'bedOccupancyManagement', name: 'Bed/Occupancy Mgt.'},
+                {id: 'housekeeping', name: 'Housekeeping'},
+                {id: 'emergencyDepartmentModule', name: 'Emergency Dept.'},
+                {id: 'patientHealthRecordDoc', name: 'Patient Health Record/Doc'}
+            ];
+            let navHtml = '';
+            modules.forEach(module => {
+                navHtml += `<a href="#" class="his-module-nav-link block py-1.5 px-3 rounded text-xs hover:bg-slate-500" data-section="healthcareSystems" data-subsection="his" data-detail="${module.id}">${module.name}</a>`;
+            });
+            hisModuleNav.innerHTML = navHtml;
+        }
+
+
+        function renderContent(sectionId, subsectionId = null, detailId = null) {
+            const sectionData = contentData[sectionId];
+            if (sectionData) {
+                if (typeof sectionData.render === 'function') {
+                    contentHost.innerHTML = sectionData.render(subsectionId, detailId);
+                } else if (subsectionId && sectionData.modules && sectionData.modules[subsectionId] && typeof sectionData.modules[subsectionId].render === 'function') {
+                     contentHost.innerHTML = sectionData.modules[subsectionId].render(detailId);
+                } else {
+                    contentHost.innerHTML = `<h2 class="text-2xl font-semibold text-red-500">Content Not Found</h2><p>Content for the selected section or subsection is not defined.</p>`;
+                }
+            } else {
+                contentHost.innerHTML = `<h2 class="text-2xl font-semibold text-red-500">Section Not Found</h2><p>Data for '${sectionId}' could not be found.</p>`;
+            }
+            updateNavActiveState(sectionId, subsectionId, detailId);
+            attachDynamicButtonListeners();
+        }
+
+        function attachDynamicButtonListeners() {
+            document.querySelectorAll('.subsystem-btn, .his-module-btn, .back-to-his-modules-btn, .back-to-main-healthcare-btn, .back-to-main-finance-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = e.target.dataset.section;
+                    const subsection = e.target.dataset.subsection;
+                    const detail = e.target.dataset.detail;
+                    renderContent(section, subsection, detail);
+                });
+            });
+        }
+
+        mainNav.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetLink = e.target.closest('a');
+            if (!targetLink) return;
+
+            const section = targetLink.dataset.section;
+            const subsection = targetLink.dataset.subsection;
+            const detail = targetLink.dataset.detail;
+            
+            if (section) {
+                if (targetLink.classList.contains('his-module-nav-link')) {
+                     renderContent(section, subsection, detail);
+                } 
+                else if (subsection && (section === 'healthcareSystems' || section === 'financeSystems')) {
+                    renderContent(section, subsection);
+                }
+                else {
+                     renderContent(section);
+                }
+            }
+        });
+        
+        populateHisModulesNav();
+        renderContent('overview'); 
+
+    </script>
+</body>
+</html>
